@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct HomeView: View {
+    @AppStorage("onboarding") var isOnboardingViewActive = false
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 30){
+            Text("Home view")
+                .font(.title)
+            Button{
+                isOnboardingViewActive = true
+            }label: {
+                Text("On boarding View")
+            }
+        }
     }
 }
 

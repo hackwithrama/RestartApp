@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     @AppStorage("onboarding") var isOnboardingViewActive = false
+    @State private var isAnimating = false
+    
     var body: some View {
         VStack{
             Spacer()
@@ -17,6 +19,8 @@ struct HomeView: View {
                 Image("character-2")
                     .resizable()
                     .scaledToFit()
+                    .offset(y: isAnimating ? 10 : -20)
+                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true).delay(1.5), value: isAnimating)
             }
             .padding()
             
@@ -45,6 +49,9 @@ struct HomeView: View {
             
             Spacer()
         }
+        .onAppear(perform: {
+            isAnimating = true
+        })
     }
 }
 

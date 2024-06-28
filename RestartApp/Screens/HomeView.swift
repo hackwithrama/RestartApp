@@ -10,14 +10,40 @@ import SwiftUI
 struct HomeView: View {
     @AppStorage("onboarding") var isOnboardingViewActive = false
     var body: some View {
-        VStack(spacing: 30){
-            Text("Home view")
-                .font(.title)
+        VStack{
+            Spacer()
+            ZStack{
+                CircleView(circleColor: .secondary, circleOpacity: 0.25)
+                Image("character-2")
+                    .resizable()
+                    .scaledToFit()
+            }
+            .padding()
+            
+            Text("The time that leads to mastery is depends on intensity of focus")
+                .multilineTextAlignment(.center)
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
             Button{
                 isOnboardingViewActive = true
             }label: {
-                Text("On boarding View")
+                Label(
+                    title: { Text("Restart") },
+                    icon: { Image(systemName: "restart.circle") }
+                )
+                .imageScale(.large)
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
             }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .background(.colorBlue)
+            .cornerRadius(16)
+            
+            Spacer()
         }
     }
 }

@@ -9,9 +9,9 @@ import SwiftUI
 
 struct OnboardingView: View {
     @AppStorage("onboarding") var isOnboardingViewActive = true
-    @State private var imageOffset: CGPoint = .zero
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
     @State private var buttonOffset: CGFloat = 0
+    @State private var imageOffset: CGSize = .zero
     @State private var isAnimating = false
     
     var body: some View {
@@ -42,11 +42,28 @@ struct OnboardingView: View {
                 // MARK: MAIN CONTENT
                 ZStack{
                     CircleView(circleColor: .white, circleOpacity: 0.25)
-                        .scaleEffect(isAnimating ? 1.0 : 0.5)
-                        .blur(radius: isAnimating ? 0.0 : 3.0)
+                        .offset(x: -imageOffset.width * 1.2, y: 0)
+                        .blur(radius: abs(imageOffset.width / 5))
+                        .animation(.easeInOut, value: imageOffset)
                     Image("character-1")
                         .resizable()
                         .scaledToFit()
+                        .offset(x: imageOffset.width * 1.2, y: 0)
+                        .rotationEffect(.degrees(Double(imageOffset.width / 20)))
+                        .gesture(
+                            DragGesture()
+                                .onChanged{value in
+                                    if abs(imageOffset.width) <= 150{
+                                        imageOffset = value.translation
+                                    }
+                                }
+                            
+                                .onEnded{_ in
+                                    withAnimation(Animation.easeOut(duration: 0.8)){
+                                        imageOffset = .zero
+                                    }
+                                }
+                        )
                 }//: ZStack
                 
                 

@@ -10,7 +10,9 @@ import SwiftUI
 struct OnboardingView: View {
     @AppStorage("onboarding") var isOnboardingViewActive = true
     @State private var imageOffset: CGPoint = .zero
-    @State private var buttonWidth = UIScreen.main.bounds.width - 32
+    @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
+    @State private var buttonOffset: CGFloat = 0
+    @State private var isAnimating = false
     
     var body: some View {
         ZStack{
@@ -31,12 +33,17 @@ struct OnboardingView: View {
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal, 40)
+                .opacity(isAnimating ? 1.0 : 0.5)
+                .offset(y: isAnimating ? 0 : -100)
+                .animation(.easeInOut(duration: 1), value: isAnimating)
                 
                 Spacer()
                 
                 // MARK: MAIN CONTENT
                 ZStack{
                     CircleView(circleColor: .white, circleOpacity: 0.25)
+                        .scaleEffect(isAnimating ? 1.0 : 0.5)
+                        .blur(radius: isAnimating ? 0.0 : 3.0)
                     Image("character-1")
                         .resizable()
                         .scaledToFit()
@@ -60,13 +67,13 @@ struct OnboardingView: View {
                     Text("Drag to get started")
                         .fontWeight(.bold)
                         .foregroundColor(.secondary)
-                        .offset(x: 60)
+                        .offset(x: 50)
                     
                     // Dynamic capsule
                     HStack{
                         Capsule()
                             .fill(.colorRed)
-                            .frame(width: 80)
+                            .frame(width: buttonOffset + 80)
                         Spacer()
                     }
                     
@@ -77,7 +84,7 @@ struct OnboardingView: View {
                                 .fill(.colorRed)
                                 .overlay(
                                     Circle()
-                                        .fill(.black.opacity(0.5))
+                                        .fill(.black.opacity(0.25))
                                         .padding(8)
                                 )
                             Image(systemName: "chevron.right.2")
@@ -85,6 +92,28 @@ struct OnboardingView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
                         }
+                        .offset(x: buttonOffset)
+                        .gesture(
+                            DragGesture()
+                                .onChanged{value in
+                                    if value.translation.width > 0 && buttonOffset <= buttonWidth - 80 {
+                                        buttonOffset = value.translation.width
+                                    }
+                                }
+                            
+                                .onEnded{_ in
+                                    withAnimation(Animation.easeOut(duration: 0.5)){
+                                        if buttonOffset > buttonWidth / 2{
+                                            buttonOffset = buttonWidth - 80
+                                            isOnboardingViewActive = false
+                                        }else {
+                                            buttonOffset = 0
+                                        }
+                                    }
+                                    
+                                }
+                        )
+                        
                         Spacer()
                     }
                     .onTapGesture {
@@ -92,12 +121,17 @@ struct OnboardingView: View {
                     }
                     
                 }
-                .frame(height: 80, alignment: .center)
-                .padding()
+                .frame(width: buttonWidth, height: 80, alignment: .center)
+                .opacity(isAnimating ? 1.0 : 0.5)
+                .offset(y: isAnimating ? 0 : 100)
+                .animation(.easeInOut(duration: 1), value: isAnimating)
                 
                 Spacer()
             }
         }
+        .onAppear(perform: {
+            isAnimating = true
+        })
     }
 }
 

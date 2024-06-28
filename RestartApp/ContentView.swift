@@ -11,11 +11,15 @@ struct ContentView: View {
     @AppStorage("onboarding") var isOnboardingViewActive = true
     
     var body: some View {
-        if isOnboardingViewActive {
-            OnboardingView()
-        }else{
-            HomeView()
+        Group{
+            if isOnboardingViewActive {
+                OnboardingView()
+            }else{
+                HomeView()
+            }
         }
+        .animation(.easeOut(duration: 1), value: isOnboardingViewActive)
+
     }
 }
 
